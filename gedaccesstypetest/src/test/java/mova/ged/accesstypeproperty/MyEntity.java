@@ -1,7 +1,10 @@
 package mova.ged.accesstypeproperty;
 
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -27,28 +30,37 @@ public class MyEntity {
     }
 
     @Access(AccessType.PROPERTY)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "my_enum", columnDefinition = "enum('A', 'B', 'C', 'D', 'E')")
     @MapKeyEnumerated(EnumType.STRING)
     public Map<MyEnum, Integer> getMyEnumsByProperty() {
         return myEnumsByProperty;
     }
 
-    public void setMyEnumsByProperty(Map<MyEnum, Integer> myEnumsByProperty) {
-//        this.myEnumsByProperty = new EnumMap<>(myEnumsByProperty);
+    public void setMyEnumsByProperty(final Map<MyEnum, Integer> myEnums) {
+        LoggerFactory.getLogger(getClass()).info("Begining of the setter: " + myEnums.toString());
+
+        // Doing this and using it insted of the one in arguments, it works
+        // Map<MyEnum, Integer> temp = new EnumMap<>(myEnums);
 
         this.myEnumsByProperty.clear();
-        for (MyEnum myEnum : myEnumsByProperty.keySet()) this.myEnumsByProperty.put(myEnum, myEnumsByProperty.get(myEnum));
+        LoggerFactory.getLogger(getClass()).info("Clear is done: " + myEnums.toString());
+
+        for (MyEnum myEnum : myEnums.keySet()) this.myEnumsByProperty.put(myEnum, myEnums.get(myEnum));
+        LoggerFactory.getLogger(getClass()).info("Map is set: " + myEnums.toString());
     }
 
     public Map<MyEnum, Integer> getMyEnumsByField() {
         return myEnumsByField;
     }
 
-    public void setMyEnumsByField(Map<MyEnum, Integer> myEnumsByField) {
-//        this.myEnumsByField = new EnumMap<>(myEnumsByField);
+    public void setMyEnumsByField(Map<MyEnum, Integer> myEnums) {
+        LoggerFactory.getLogger(getClass()).info("Begining of the setter: " + myEnums.toString());
 
         this.myEnumsByField.clear();
-        for (MyEnum myEnum : myEnumsByField.keySet()) this.myEnumsByField.put(myEnum, myEnumsByField.get(myEnum));
+        LoggerFactory.getLogger(getClass()).info("Clear is done: " + myEnums.toString());
+
+        for (MyEnum myEnum : myEnums.keySet()) this.myEnumsByField.put(myEnum, myEnums.get(myEnum));
+        LoggerFactory.getLogger(getClass()).info("Map is set: " + myEnums.toString());
     }
 }

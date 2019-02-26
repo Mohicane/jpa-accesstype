@@ -3,15 +3,13 @@ package mova.ged.accesstypeproperty;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -20,8 +18,6 @@ import java.util.Map;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
-@EntityScan(basePackageClasses = MyEntity.class)
-@ComponentScan(basePackageClasses = MyEntity.class)
 public class AccessTypePropertyTest {
 
     @Autowired
@@ -36,14 +32,20 @@ public class AccessTypePropertyTest {
         myEnums.put(MyEntity.MyEnum.B, 100);
         myEnums.put(MyEntity.MyEnum.E, 1000);
 
-        myEntity.setMyEnumsByProperty(myEnums);
-        myEntity.setMyEnumsByField(myEnums);
+        myEnums = Collections.unmodifiableMap(myEnums);
 
+        LoggerFactory.getLogger(getClass()).info("Initializing the entity");
+        myEntity.setMyEnumsByField(myEnums);
+        myEntity.setMyEnumsByProperty(myEnums);
+
+        LoggerFactory.getLogger(getClass()).info("Verifying the entity before persist it");
         Assert.assertEquals(myEnums, myEntity.getMyEnumsByField());
         Assert.assertEquals(myEnums, myEntity.getMyEnumsByProperty());
 
+        LoggerFactory.getLogger(getClass()).info("Persisting the entity");
         entityManager.persistAndFlush(myEntity);
 
+        LoggerFactory.getLogger(getClass()).info("Verifying the entity after persist it");
         Assert.assertEquals(myEnums, myEntity.getMyEnumsByField());
         Assert.assertEquals(myEnums, myEntity.getMyEnumsByProperty());
     }
