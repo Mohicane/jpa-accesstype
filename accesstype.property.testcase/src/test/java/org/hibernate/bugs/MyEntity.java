@@ -41,6 +41,7 @@ public class MyEntity {
 
         // Doing this and using it insted of the one in arguments, it works
         // Map<MyEnum, Integer> temp = new EnumMap<>(myEnums);
+        LoggerFactory.getLogger(getClass()).info("Are property and arg the same: " + (myEnums == this.myEnumsByProperty));
 
         this.myEnumsByProperty.clear();
         LoggerFactory.getLogger(getClass()).info("Clear is done: " + myEnums.toString());
